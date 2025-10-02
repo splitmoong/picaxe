@@ -1,28 +1,39 @@
 #main.py
 
 import gi
+import sys
+
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk
+gi.require_version("Adw", "1")
+from gi.repository import Gtk, Adw
+
 from ui import MainUI
 
-class MainWindow(Gtk.ApplicationWindow):
-    def __init__(self, app):
-        super().__init__(application=app)
-        self.set_title("Crunchy")
-        self.set_default_size(800, 600)
+class CrunchyApp(Adw.Application):
+    def __init__(self, **kwargs):
+        super().__init__(application_id="com.example.crunchy", **kwargs)
+        self.connect('activate', self.on_activate)
 
-        # Add the UI
-        ui = MainUI()
-        self.set_child(ui)
+    def on_activate(self, app):
 
-class CrunchyApp(Gtk.Application):
-    def __init__(self):
-        super().__init__(application_id="com.example.crunchy")
+        win = Adw.ApplicationWindow(application=app)
+        win.set_title("Crunchy")
+        win.set_default_size(500, 400) 
 
-    def do_activate(self):
-        win = MainWindow(self)
+        main_view = Adw.ToolbarView()
+        
+        header = Adw.HeaderBar()
+        main_view.add_css_class("flat")
+
+        main_view.add_top_bar(header)
+
+        content = MainUI()
+        main_view.set_content(content)
+        win.set_content(main_view)
+
         win.present()
 
 if __name__ == "__main__":
     app = CrunchyApp()
-    app.run()
+    app.run(sys.argv)
+
