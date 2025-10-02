@@ -17,7 +17,7 @@ class CrunchyApp(Adw.Application):
     def on_activate(self, app):
 
         win = Adw.ApplicationWindow(application=app)
-        win.set_title("Crunchy")
+        win.set_title("Pickaxe")
         win.set_default_size(500, 400) 
 
         main_view = Adw.ToolbarView()
