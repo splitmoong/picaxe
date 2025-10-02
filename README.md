@@ -1,16 +1,8 @@
 # Picaxe 🖼️⛏️
 
-Picaxe is a modern, minimalist image compression and conversion tool built for the GNOME desktop. Designed to be fast, efficient, and seamlessly integrated with your system's look and feel, Picaxe helps you reduce image file sizes without compromising quality, or convert them to different formats with ease.
+A minimalist image compression and conversion tool built for the GNOME desktop that helps you reduce image file sizes or convert them to different formats with ease.
 
-* **Effortless Compression:** Reduce image file sizes for faster sharing and storage.
-* **Intuitive Conversion:** Easily change image formats (e.g., PNG to JPG, etc.).
-* **Modern GNOME Integration:** Built with GTK4 and Libadwaita for a native, adaptive user experience.
-* **Seamless UI:** Respects your system's light/dark mode and accent colors.
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/31afd1e5-b68e-4f45-99b2-cb9eb31a1592" alt="Picaxe in Light Mode" width="49%" style="display: inline-block; margin: 0 0.5%;" />
-  <img src="https://github.com/user-attachments/assets/c260ad70-11b3-4c29-815d-92e07c8c00c9" alt="Picaxe in Dark Mode" width="49%" style="display: inline-block; margin: 0 0.5%;" />
-</p>
+<img width="622" height="722" alt="Screenshot From 2025-10-03 01-58-51" src="https://github.com/user-attachments/assets/32ffc682-f59a-4540-8946-9a9519abc813" />
 
 ### Prerequisites
 
