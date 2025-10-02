@@ -9,7 +9,7 @@ from gi.repository import Gtk, Adw
 
 from ui import MainUI
 
-class CrunchyApp(Adw.Application):
+class PicaxeApp(Adw.Application):
     def __init__(self, **kwargs):
         super().__init__(application_id="com.example.crunchy", **kwargs)
         self.connect('activate', self.on_activate)
@@ -17,8 +17,8 @@ class CrunchyApp(Adw.Application):
     def on_activate(self, app):
 
         win = Adw.ApplicationWindow(application=app)
-        win.set_title("Pickaxe")
-        win.set_default_size(500, 400) 
+        win.set_title("Picaxe")
+        win.set_default_size(500, 600) 
 
         main_view = Adw.ToolbarView()
         
@@ -34,6 +34,5 @@ class CrunchyApp(Adw.Application):
         win.present()
 
 if __name__ == "__main__":
-    app = CrunchyApp()
+    app = PicaxeApp()
     app.run(sys.argv)
-

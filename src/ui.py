@@ -1,33 +1,71 @@
-#ui.py
-
 import gi
+from pathlib import Path
+
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk
+gi.require_version("Adw", "1")
+from gi.repository import Gtk, Gdk, Adw
 
 from components.buttons.button import RoundedButton
 
+# This creates robust paths to your assets
+APP_DIR = Path(__file__).resolve().parent.parent
+LIGHT_ICON_PATH = APP_DIR / "assets" / "draganddropdark.png"
+DARK_ICON_PATH = APP_DIR / "assets" / "draganddropdark.png"
+
+
 class MainUI(Gtk.Box):
     def __init__(self):
-        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        self.set_hexpand(True)
-        self.set_vexpand(True)
+        # The main box will be vertical. Spacing is between elements.
+        super().__init__(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=5  # Changed: Reduced spacing between image and label
+        )
 
-        # Spacer to take all the vertical space above
-        spacer = Gtk.Box()
-        spacer.set_vexpand(True)
+        # 1. Configure the Image widget for expansion
+        self.drop_image = Gtk.Image()
+        self.drop_image.set_vexpand(True)
+        self.drop_image.set_margin_top(20)
+        self.drop_image.set_margin_start(20)
+        self.drop_image.set_margin_end(20)
 
-        # Create the custom button
+        # 2. Set up the Drag and Drop target on the (now large) image
+        drop_target = Gtk.DropTarget.new(Gdk.FileList, Gdk.DragAction.COPY)
+        drop_target.connect("drop", self.on_drop)
+        self.drop_image.add_controller(drop_target)
+
+        # 3. Create the new text label
+        drop_label = Gtk.Label(label="Drag and Drop Images")
+        drop_label.add_css_class("body")
+
+        # 4. Create the button
         browseFilesButton = RoundedButton(
             label="Browse Files",
-            width=150,
+            width=200,
             height=55
         )
-        browseFilesButton.set_halign(Gtk.Align.CENTER)   # center horizontally
-        browseFilesButton.set_valign(Gtk.Align.END)      # stick to bottom
-        browseFilesButton.set_margin_bottom(40)          # padding at bottom
+        browseFilesButton.set_margin_top(40) # Changed: Added margin to push button away from label
+        browseFilesButton.set_margin_bottom(20)
 
-        # Pack spacer first, then button
-        self.append(spacer)
+        # 5. Add the widgets in the correct order
+        self.append(self.drop_image)
+        self.append(drop_label)
         self.append(browseFilesButton)
 
-    
+        # The theme-switching logic remains the same
+        style_manager = Adw.StyleManager.get_default()
+        style_manager.connect("notify::dark", self.on_theme_change)
+        self.on_theme_change(style_manager)
+
+    def on_theme_change(self, style_manager, pspec=None):
+        """Callback function for when the system theme changes."""
+        if style_manager.get_dark():
+            self.drop_image.set_from_file(str(DARK_ICON_PATH))
+        else:
+            self.drop_image.set_from_file(str(LIGHT_ICON_PATH))
+
+    def on_drop(self, drop_target, value, x, y):
+        """Callback function for when a file is dropped."""
+        files = value.get_files()
+        for file in files:
+            print(f"File dropped: {file.get_path()}")
+        return True
