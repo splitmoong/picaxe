@@ -6,7 +6,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(application=app)
         self.set_title("Crunchy")
-        self.set_default_size(600, 400)
+        self.set_default_size(800, 600)
 
 class ImageToolApp(Gtk.Application):
     def __init__(self):
