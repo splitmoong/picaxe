@@ -9,8 +9,8 @@ from components.buttons.button import RoundedButton
 
 # This creates robust paths to your assets
 APP_DIR = Path(__file__).resolve().parent.parent
-LIGHT_ICON_PATH = APP_DIR / "assets" / "draganddropdark.png"
-DARK_ICON_PATH = APP_DIR / "assets" / "draganddropdark.png"
+LIGHT_ICON_PATH = APP_DIR / "assets" / "pictures" /"drag_and_drop_visual_dark.png"
+DARK_ICON_PATH = APP_DIR / "assets" / "pictures" /"drag_and_drop_visual_dark.png"
 
 
 class MainUI(Gtk.Box):
@@ -23,6 +23,7 @@ class MainUI(Gtk.Box):
 
         # 1. Configure the Image widget for expansion
         self.drop_image = Gtk.Image()
+        self.drop_image.add_css_class("picaxe-drop-zone")
         self.drop_image.set_vexpand(True)
         self.drop_image.set_margin_top(20)
         self.drop_image.set_margin_start(20)
@@ -33,6 +34,7 @@ class MainUI(Gtk.Box):
         drop_target.connect("drop", self.on_drop)
         self.drop_image.add_controller(drop_target)
 
+
         # 3. Create the new text label
         drop_label = Gtk.Label(label="Drag and Drop Images")
         drop_label.add_css_class("body")
@@ -40,10 +42,10 @@ class MainUI(Gtk.Box):
         # 4. Create the button
         browseFilesButton = RoundedButton(
             label="Browse Files",
-            width=200,
-            height=55
+            width=150,
+            height=50
         )
-        browseFilesButton.set_margin_top(40) # Changed: Added margin to push button away from label
+        browseFilesButton.set_margin_top(40)
         browseFilesButton.set_margin_bottom(20)
 
         # 5. Add the widgets in the correct order
@@ -55,6 +57,8 @@ class MainUI(Gtk.Box):
         style_manager = Adw.StyleManager.get_default()
         style_manager.connect("notify::dark", self.on_theme_change)
         self.on_theme_change(style_manager)
+
+        self._load_styling_css()
 
     def on_theme_change(self, style_manager, pspec=None):
         """Callback function for when the system theme changes."""
@@ -69,3 +73,20 @@ class MainUI(Gtk.Box):
         for file in files:
             print(f"File dropped: {file.get_path()}")
         return True
+    
+    def _load_styling_css(self):
+        print("kkkkkkkk")
+        css = """
+        .picaxe-drop-zone:drop(active) {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        """
+        provider = Gtk.CssProvider()
+        provider.load_from_data(css.encode())
+        Gtk.StyleContext.add_provider_for_display(
+            Gdk.Display.get_default(),
+            provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
