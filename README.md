@@ -1,8 +1,8 @@
-# Picaxe 🖼️⛏️
+# Picaxe
 
 A minimalist image compression and conversion tool built for the GNOME desktop that helps you reduce image file sizes or convert them to different formats with ease.
 
-<img width="622" height="722" alt="Screenshot From 2025-10-03 01-58-51" src="https://github.com/user-attachments/assets/32ffc682-f59a-4540-8946-9a9519abc813" />
+<img width="3945" height="1500" alt="Group 1" src="https://github.com/user-attachments/assets/7e5883eb-f83d-44e2-b94a-5803e93a011f" />
 
 ### Prerequisites
 
