@@ -11,7 +11,7 @@ gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw
 
 from ui import MainUI
-from ImageItem import ImageItem
+from objects.ImageItem import ImageItem
 
 class PicaxeApp(Adw.Application):
     def __init__(self, **kwargs):
@@ -25,7 +25,7 @@ class PicaxeApp(Adw.Application):
     def on_activate(self, app):
         self.win = Adw.ApplicationWindow(application=app)
         self.win.set_title("Picaxe")
-        self.win.set_default_size(500, 600)
+        self.win.set_default_size(650, 500)
 
         main_view = Adw.ToolbarView()
         header = Adw.HeaderBar()
