@@ -1,8 +1,80 @@
 import gi
-import sys
+from pathlib import Path
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GdkPixbuf
 
-class ImageCard():
-    pass
+class ImageCard(Gtk.Box):
+    def __init__(self, image_item):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        
+        self.image_item = image_item
+        
+        # Add some padding and styling
+        self.set_margin_top(8)
+        self.set_margin_bottom(8)
+        self.set_margin_start(16)
+        self.set_margin_end(16)
+        
+        # Create thumbnail
+        self.thumbnail = Gtk.Image()
+        self.thumbnail.set_size_request(64, 64)
+        self._load_thumbnail()
+        
+        # Create info section
+        info_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        info_box.set_hexpand(True)
+        info_box.set_valign(Gtk.Align.CENTER)
+        
+        # Filename label
+        filename_label = Gtk.Label(label=image_item.path.name)
+        filename_label.set_halign(Gtk.Align.START)
+        filename_label.add_css_class("heading")
+        
+        # Size and format info
+        size_text = f"{image_item.size_kb:.1f} KB • {image_item.original_type.upper()}"
+        size_label = Gtk.Label(label=size_text)
+        size_label.set_halign(Gtk.Align.START)
+        size_label.add_css_class("dim-label")
+        
+        info_box.append(filename_label)
+        info_box.append(size_label)
+        
+        # Add components to the card
+        self.append(self.thumbnail)
+        self.append(info_box)
+        
+        # Add card styling
+        self.add_css_class("card")
+        self._load_card_css()
+    
+    def _load_thumbnail(self):
+        """Load and set the thumbnail image."""
+        try:
+            # Create a scaled pixbuf from the image file
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                str(self.image_item.path), 
+                64, 64, 
+                True  # preserve aspect ratio
+            )
+            self.thumbnail.set_from_pixbuf(pixbuf)
+        except Exception as e:
+            print(f"Could not load thumbnail for {self.image_item.path}: {e}")
+            # Set a placeholder or default icon
+            self.thumbnail.set_from_icon_name("image-missing")
+    
+    def _load_card_css(self):
+        """Load custom CSS for the card styling."""
+        css = """
+        .card {
+            background-color: alpha(@theme_bg_color, 0.5);
+            border-radius: 8px;
+            border: 1px solid alpha(@theme_fg_color, 0.1);
+        }
+        .card:hover {
+            background-color: alpha(@theme_bg_color, 0.8);
+        }
+        """
+        provider = Gtk.CssProvider()
+        provider.load_from_data(css.encode())
+        self.get_style_context().add_provider(provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)

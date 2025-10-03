@@ -3,18 +3,24 @@
 
 import gi
 import sys
+from pathlib import Path
+import json
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw
 
 from ui import MainUI
+from ImageItem import ImageItem
 
 class PicaxeApp(Adw.Application):
     def __init__(self, **kwargs):
         super().__init__(application_id="com.example.crunchy", **kwargs)
         self.connect('activate', self.on_activate)
         self.win = None
+        self.image_items = []  # Store ImageItem objects
+        self.history_dir = Path.home() / ".picaxe-history"
+        self._setup_history_directory()
 
     def on_activate(self, app):
         self.win = Adw.ApplicationWindow(application=app)
@@ -26,8 +32,11 @@ class PicaxeApp(Adw.Application):
         main_view.add_css_class("flat")
         main_view.add_top_bar(header)
 
-        content = MainUI(on_browse_button_click=self._on_browse_files)
-        main_view.set_content(content)
+        self.content = MainUI(
+            on_browse_button_click=self._on_browse_files,
+            on_drop_files=self._on_drop_files
+        )
+        main_view.set_content(self.content)
         
         self.win.set_content(main_view)
         self.win.present()
@@ -53,12 +62,59 @@ class PicaxeApp(Adw.Application):
             # CHANGED: Use the corresponding "_finish" method for multiple files.
             files = dialog.open_multiple_finish(result)
             if files:
-                file_paths = [f.get_path() for f in files]
                 print("Selected files:")
-                for path in file_paths:
-                    print(f"- {path}")
+                new_items = []
+                for file in files:
+                    path = Path(file.get_path())
+                    try:
+                        image_item = ImageItem(path)
+                        self.image_items.append(image_item)
+                        new_items.append(image_item)
+                        print(f"Created ImageItem: {image_item}")
+                    except Exception as img_error:
+                        print(f"Error creating ImageItem for {path}: {img_error}")
+                
+                # Update UI with new items
+                if new_items:
+                    self.content.add_image_items(new_items)
         except Exception as e:
             print(f"File selection cancelled or failed: {e}")
+
+    def _on_drop_files(self, files):
+        """Called when files are dropped onto the UI."""
+        print("Files dropped:")
+        new_items = []
+        for file in files:
+            path = Path(file.get_path())
+            try:
+                # Only process image files
+                if path.suffix.lower() in ['.png', '.jpg', '.jpeg', '.webp']:
+                    image_item = ImageItem(path)
+                    self.image_items.append(image_item)
+                    new_items.append(image_item)
+                    print(f"Created ImageItem: {image_item}")
+                else:
+                    print(f"Skipped non-image file: {path}")
+            except Exception as img_error:
+                print(f"Error creating ImageItem for {path}: {img_error}")
+        
+        # Update UI with new items
+        if new_items:
+            self.content.add_image_items(new_items)
+
+
+    def _setup_history_directory(self):
+        """Create the .picaxe-history directory if it doesn't exist."""
+        try:
+            self.history_dir.mkdir(exist_ok=True)
+            print(f"History directory ready at: {self.history_dir}")
+        except Exception as e:
+            print(f"Warning: Could not create history directory: {e}")
+    
+    def _save_history(self):
+        """Save current session to history (placeholder for future implementation)."""
+        # TODO: Implement serialization of image_items to JSON
+        pass
 
 
 if __name__ == "__main__":
