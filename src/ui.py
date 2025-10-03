@@ -7,6 +7,7 @@ from gi.repository import Gtk, Gdk, Adw
 
 from components.buttons.button import RoundedButton
 from components.cards.imagecard import ImageCard
+from constants import MARGIN_STANDARD, MARGIN_SMALL, CARD_SPACING
 
 # This creates robust paths to your assets
 APP_DIR = Path(__file__).resolve().parent.parent
@@ -96,10 +97,10 @@ class MainUI(Gtk.Box):
         
         # Create header with title and add button
         header_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        header_box.set_margin_top(16)
-        header_box.set_margin_start(16)
-        header_box.set_margin_end(16)
-        header_box.set_margin_bottom(8)
+        header_box.set_margin_top(MARGIN_STANDARD)
+        header_box.set_margin_start(MARGIN_STANDARD)
+        header_box.set_margin_end(MARGIN_STANDARD)
+        header_box.set_margin_bottom(MARGIN_SMALL)
         
         title_label = Gtk.Label(label="Images")
         title_label.add_css_class("title-2")
@@ -122,9 +123,9 @@ class MainUI(Gtk.Box):
         self.scrolled_window.set_vexpand(True)
         
         # Create box to hold image cards
-        self.cards_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
-        self.cards_box.set_margin_start(8)
-        self.cards_box.set_margin_end(8)
+        self.cards_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=CARD_SPACING)
+        self.cards_box.set_margin_start(0)  # No margins - cards handle their own positioning
+        self.cards_box.set_margin_end(0)    # No margins - cards handle their own positioning
         
         self.scrolled_window.set_child(self.cards_box)
         
