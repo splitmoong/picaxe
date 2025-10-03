@@ -36,6 +36,8 @@ class PicaxeApp(Adw.Application):
             on_browse_button_click=self._on_browse_files,
             on_drop_files=self._on_drop_files
         )
+        # Store reference to sync deletions
+        self.content.parent_app = self
         main_view.set_content(self.content)
         
         self.win.set_content(main_view)

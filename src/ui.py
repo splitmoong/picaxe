@@ -149,11 +149,49 @@ class MainUI(Gtk.Box):
         
         # Add new cards
         for item in self.image_items:
-            card = ImageCard(item)
+            card = ImageCard(item, on_delete=self._on_delete_image)
             self.cards_box.append(card)
         
         # Switch to image list view
         self.stack.set_visible_child_name("image_list")
+    
+    def _on_delete_image(self, image_item):
+        """Handle deletion of an image item."""
+        try:
+            # Remove from internal list
+            self.image_items.remove(image_item)
+            
+            # Also remove from parent app's list if available
+            if hasattr(self, 'parent_app') and self.parent_app:
+                try:
+                    self.parent_app.image_items.remove(image_item)
+                except ValueError:
+                    pass  # Item might not be in parent list
+            
+            # Refresh the card display
+            self._refresh_cards()
+            
+            # If no images left, go back to drop zone
+            if not self.image_items:
+                self.stack.set_visible_child_name("drop_zone")
+                
+            print(f"Deleted: {image_item.path.name}")
+        except ValueError:
+            print(f"Error: Image item not found in list")
+    
+    def _refresh_cards(self):
+        """Refresh the card display after deletion."""
+        # Clear existing cards
+        child = self.cards_box.get_first_child()
+        while child:
+            next_child = child.get_next_sibling()
+            self.cards_box.remove(child)
+            child = next_child
+        
+        # Add remaining cards
+        for item in self.image_items:
+            card = ImageCard(item, on_delete=self._on_delete_image)
+            self.cards_box.append(card)
 
     def on_theme_change(self, style_manager, pspec=None):
         """Callback function for when the system theme changes."""
