@@ -13,18 +13,18 @@ class ImageCard(Gtk.Box):
         self.image_item = image_item
         self.on_delete = on_delete
         
-        # Card itself has margins from the window edges
+        # card's margins from the window edges
         self.set_margin_top(MARGIN_SMALL)
         self.set_margin_bottom(MARGIN_SMALL//2)
-        self.set_margin_start(MARGIN_STANDARD)  # 16px from left window edge
-        self.set_margin_end(MARGIN_STANDARD)    # 16px from right window edge
+        self.set_margin_start(MARGIN_STANDARD)  
+        self.set_margin_end(MARGIN_STANDARD)
         
-        # Create thumbnail - no additional margins since card handles positioning
+        # create thumbnail a Gtk.Image object
         self.thumbnail = Gtk.Image()
         self.thumbnail.set_size_request(THUMBNAIL_SIZE, THUMBNAIL_SIZE)
         self._load_thumbnail()
         
-        # Create info section
+        # info_box
         info_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
         info_box.set_hexpand(True)
         info_box.set_valign(Gtk.Align.CENTER)

@@ -1,0 +1,42 @@
+#components/cards/imagecard.py |
+-------------------------------|
+-implement the compress button
+
+
+
+
+#create new components/popover/popover.py |
+------------------------------------------|
+-implement a popover component that displays a slider to change compression
+
+
+
+
+#logic/compressor.py |
+---------------------|
+-implement a compressor class
+    -understand how to compress the image in-memory to calculate the final image size. (yes I was today years old when I came to know that you cannot compute the final size before actually compressing at least once)
+    maybe, if I can compress it once, I can then calculate the final size without doing further calculations?
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////
+curtail uses these packages 
+    GTK 4
+    Libadwaita
+    Python 3
+    Oxipng
+    pngquant
+    Jpegoptim
+    libwebp
+    Scour
+
+we are going to use Pillow.
