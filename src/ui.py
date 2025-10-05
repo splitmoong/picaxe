@@ -31,61 +31,74 @@ class MainUI(Gtk.Box):
         self.stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
         self.stack.set_transition_duration(300)
         
+        # We'll create a persistent footer (drag hint + Browse button) after the stack
+
         # Create the drop zone page
         self._create_drop_zone_page()
         
         # Create the image list page  
         self._create_image_list_page()
-        
+
         # Add stack to main container
         self.append(self.stack)
-        
+
         # Start with drop zone visible
         self.stack.set_visible_child_name("drop_zone")
-        
+        # Footer with persistent drag hint and Browse button at the bottom
+        footer_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        footer_box.set_margin_top(MARGIN_SMALL)
+        footer_box.set_margin_bottom(MARGIN_STANDARD)
+        footer_box.set_margin_start(MARGIN_STANDARD)
+        footer_box.set_margin_end(MARGIN_STANDARD)
+        footer_box.set_hexpand(True)
+
+    # Footer contains only the persistent Browse button
+
+        self.browse_button = RoundedButton(
+            label="Browse Files",
+            width=160,
+            height=55,
+            on_click=self.on_browse_button_click
+        )
+        self.browse_button.set_halign(Gtk.Align.CENTER)
+
+        footer_box.append(self.browse_button)
+
+        # Append footer to the main container so it stays at the bottom
+        self.append(footer_box)
+
         # Load custom CSS
         self._load_styling_css()
     
     def _create_drop_zone_page(self):
         """Create the initial drop zone interface."""
         drop_zone_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-        
-        # Configure the Image widget for expansion
+
+        # Configure the Image widget for expansion (purely presentational)
         self.drop_image = Gtk.Image()
         self.drop_image.add_css_class("picaxe-drop-zone")
         self.drop_image.set_vexpand(True)
         self.drop_image.set_margin_top(20)
-        self.drop_image.set_margin_start(20)
-        self.drop_image.set_margin_end(20)
+        self.drop_image.set_margin_bottom(0)
+        self.drop_image.set_margin_start(MARGIN_STANDARD)
+        self.drop_image.set_margin_end(MARGIN_STANDARD)
 
-        # Set up the Drag and Drop target
+
+        # Note: attach a DropTarget to the entire MainUI (self) so drops work
+        # even after the splash. Attach here once.
         drop_target = Gtk.DropTarget.new(Gdk.FileList, Gdk.DragAction.COPY)
         drop_target.connect("drop", self.on_drop)
-        self.drop_image.add_controller(drop_target)
+        # attach to the top-level widget (self)
+        self.add_controller(drop_target)
 
-        # Create the text label
-        drop_label = Gtk.Label(label="Drag and Drop Images")
-        drop_label.add_css_class("body")
-
-        # Create the button
-        browse_button = RoundedButton(
-            label="Browse Files",
-            width=160,
-            height=55,
-            on_click=self.on_browse_button_click
-        )
-        browse_button.set_margin_top(15)
-        browse_button.set_margin_bottom(20)
-
-        # Add widgets to drop zone
+        # Add the presentational image to the drop zone
         drop_zone_box.append(self.drop_image)
-        drop_zone_box.append(drop_label)
-        drop_zone_box.append(browse_button)
-        
+    # no splash label — splash image only
+
         # Add to stack
         self.stack.add_named(drop_zone_box, "drop_zone")
-        
-        # Set up theme switching for drop zone
+
+        # Set up theme switching for drop image
         style_manager = Adw.StyleManager.get_default()
         style_manager.connect("notify::dark", self.on_theme_change)
         self.on_theme_change(style_manager)
@@ -102,20 +115,12 @@ class MainUI(Gtk.Box):
         header_box.set_margin_end(MARGIN_STANDARD)
         header_box.set_margin_bottom(MARGIN_SMALL)
         
-        title_label = Gtk.Label(label="Images")
-        title_label.add_css_class("title-2")
-        title_label.set_halign(Gtk.Align.START)
-        title_label.set_hexpand(True)
+        # title_label is persistent in the header; keep header_box empty here
+        # so the stack page aligns under the global header
         
-        add_more_button = RoundedButton(
-            label="Add More",
-            width=100,
-            height=32,
-            on_click=self.on_browse_button_click
-        )
+        # No Add More button — Browse Files is persistent in the header
         
-        header_box.append(title_label)
-        header_box.append(add_more_button)
+        header_box.append(Gtk.Label())  # spacer to keep layout consistent
         
         # Create scrolled window for image cards
         self.scrolled_window = Gtk.ScrolledWindow()
@@ -130,9 +135,8 @@ class MainUI(Gtk.Box):
         self.scrolled_window.set_child(self.cards_box)
         
         # Add components to list page
-        list_box.append(header_box)
         list_box.append(self.scrolled_window)
-        
+
         # Add to stack
         self.stack.add_named(list_box, "image_list")
     
@@ -154,6 +158,7 @@ class MainUI(Gtk.Box):
         
         # Switch to image list view
         self.stack.set_visible_child_name("image_list")
+    # Footer keeps the Browse button; no splash label used anymore
     
     def _on_delete_image(self, image_item):
         """Handle deletion of an image item."""
@@ -174,6 +179,7 @@ class MainUI(Gtk.Box):
             # If no images left, go back to drop zone
             if not self.image_items:
                 self.stack.set_visible_child_name("drop_zone")
+                # no splash label to show; splash image will be visible
                 
             print(f"Deleted: {image_item.path.name}")
         except ValueError:

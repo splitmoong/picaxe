@@ -12,3 +12,5 @@ CARD_INNER_SPACING = 12  # Space inside cards between elements
 
 # Image sizes
 THUMBNAIL_SIZE = 64   # Standard thumbnail size
+ 
+# (SPLASH_LABEL_GAP removed — splash label no longer used)
